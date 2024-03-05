@@ -4,6 +4,16 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
+    """
+    Load and merge messages and categories datasets.
+
+    Args:
+        - messages_filepath (str): The path to the messages dataset file.
+        - categories_filepath (str): The path to the categories dataset file.
+
+    Returns:
+        - DataFrame: A merged DataFrame containing both messages and categories data.
+    """
     # load datasets
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
@@ -14,6 +24,16 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+    """
+    Cleans the combined DataFrame by splitting the categories into separate
+    columns, converting category values to numbers, and removing duplicates.
+
+    Args:
+        - df (DataFrame): The merged DataFrame of messages and categories.
+
+    Returns:
+        - DataFrame: The cleaned DataFrame with separate category columns and no duplicates.
+    """
     # create a dataframe of the 36 individual category columns
     categories = df['categories'].str.split(';', expand=True)
 
@@ -41,11 +61,24 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    """
+    Saves the cleaned DataFrame to a SQLite database.
+
+    Args:
+        - df (DataFrame): The cleaned DataFrame to be saved.
+        - database_filename (str): The filename for the SQLite database.
+    """
     engine = create_engine(f'sqlite:///{database_filename}')
     df.to_sql('Messages_And_Categories_Table', engine, index=False)
 
 
 def main():
+    """
+    Main function to execute the data processing scripts. This function orchestrates
+    loading the data, cleaning it, and saving it to a database. It requires three
+    command line arguments: file paths to the messages dataset, categories dataset,
+    and database file.
+    """
     if len(sys.argv) == 4:
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
@@ -73,3 +106,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
