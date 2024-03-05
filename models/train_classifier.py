@@ -10,11 +10,23 @@ from sklearn.multioutput import MultiOutputClassifier
 from sklearn.linear_model import LogisticRegression
 import numpy as np
 from sklearn.metrics import classification_report
+import pickle
 from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import StandardScaler
 
 
 def load_data(database_filepath):
+    """
+    Load data from a SQLite database.
+
+    Args:
+        - database_filepath (str): The path to the SQLite database file.
+
+    Returns:
+        - X (Series): The messages as the input features.
+        - Y (DataFrame): The categories as the target variables.
+        - category_names (Index): The names of the categories.
+    """
     engine = create_engine(f'sqlite:///{database_filepath}')
     df = pd.read_sql_table('Messages_And_Categories_Table', engine)
 
@@ -26,6 +38,20 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+    """
+    Tokenizes text data.
+
+    This function tokenizes text data by:
+    1. Tokenizing the text into words.
+    2. Lemmatizing (reducing words to their base form).
+    3. Converting to lowercase and stripping whitespace.
+
+    Args:
+        - text (str): The text to be tokenized.
+
+    Returns:
+        - list: A list of clean tokens.
+    """
     tokens = word_tokenize(text)
     clean_tokens = []
 
@@ -37,6 +63,16 @@ def tokenize(text):
 
 
 def build_model():
+    """
+    Builds a machine learning pipeline.
+
+    This function builds a machine learning pipeline that processes text messages and then
+    applies a multi-output classifier on the processed text. The classifier is based on
+    logistic regression.
+
+    Returns:
+        - Pipeline: The constructed machine learning pipeline.
+    """
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
@@ -51,7 +87,7 @@ def build_model():
     ])
 
     """
-            The following was used to determine the best parameters
+            The following was used to determine the best parameters, it was commented to save some time when running the code
 
             pipeline.get_params()
             parameters = {
@@ -72,6 +108,18 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    """
+    Evaluates the performance of the machine learning model.
+
+    This function prints out the classification report for each category, including precision,
+    recall, f1-score, and support.
+
+    Args:
+        - model (Pipeline): The trained machine learning model.
+        - X_test (Series): The test features.
+        - Y_test (DataFrame): The test target variables.
+        - category_names (Index): The names of the categories.
+    """
     y_pred = model.predict(X_test)
 
     for i, column in enumerate(category_names):
@@ -81,12 +129,29 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
-    import pickle
+    """
+    Saves the trained model to a Python pickle file.
+
+    Args:
+        - model (Pipeline): The trained machine learning model.
+        - model_filepath (str): The filepath where to save the model.
+    """
     with open(f'{model_filepath}', 'wb') as file:
         pickle.dump(model, file)
 
 
 def main():
+    """
+    Main function to run the machine learning pipeline.
+
+    This function orchestrates the model training and evaluation process by:
+    1. Loading the data from a SQLite database.
+    2. Splitting the dataset into training and test sets.
+    3. Building the machine learning model.
+    4. Training the model.
+    5. Evaluating the model's performance on the test set.
+    6. Saving the trained model as a pickle file.
+    """
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
