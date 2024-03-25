@@ -86,23 +86,15 @@ def build_model():
         )),
     ])
 
-    """
-            The following was used to determine the best parameters, it was commented to save some time when running the code
+    pipeline.get_params()
+    parameters = {
+        'mopc__estimator__max_iter': [100, 500, 1000],
+        'mopc__estimator__warm_start': [True, False],
+        'mopc__estimator__multi_class': ['auto', 'ovr', 'multinomial'],
+        'max_depth': [None, 5, 10],
+    }
 
-            pipeline.get_params()
-            parameters = {
-                'mopc__estimator__max_iter': [100, 500, 1000],
-                'mopc__estimator__warm_start': [True, False],
-                'mopc__estimator__multi_class': ['auto', 'ovr', 'multinomial'],
-            }
-
-            cv = GridSearchCV(pipeline, parameters)
-
-            the performance of Other models such as KNeighborsClassifier and RandomForestClassifier was tested, but a lower
-            testing score was archived.
-
-            the same result was also found when adding a standard scaler to the pipe line.
-    """
+    cv = GridSearchCV(pipeline, parameters)
 
     return pipeline
 
