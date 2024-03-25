@@ -1,8 +1,28 @@
 # Disaster Response Pipeline
+## Files in the repository
+- DisasterResponsePipeline
+    - App
+        - templates
+            - go.html
+            - master.html
+        - Run.py
+    - Data
+        - CleanedData.db
+        - DisasterResponse.db
+        - disaster_categories.csv
+        - disaster_messages.csv
+        - process_data.py
+    - Models
+        - classifier.pkl
+        - train_classifier.py
+
+
 
 ## Summery
 In This Project, I built both an ETL pipeline to clean and prepare the datasets and an ML pipeline to build then train a model. The pipelines were built to build a model that can
 take any message and then classify it into the appropriate disaster response categories. Then, a Web App was built to allow users to enter any message they want and receive the categorization of that message.
+The rapid classification of messages can significantly reduce response times and ensure that resources are allocated efficiently, potentially saving lives and reducing the impact of disasters.
+And the web App provides a direct line of communication between the community and first responders, which helps responders be more adaptive and responsive to the evolving situation.
 
 ## Files
 Inside the app directory, there is a run.py file that is used to run the web app. And inside the data directory, there is  a file named process_data.py that cleans and prepares the data and then stores it in a database.
