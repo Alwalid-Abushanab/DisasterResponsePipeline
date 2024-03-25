@@ -1,4 +1,6 @@
 import sys
+
+import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine
 
@@ -50,6 +52,10 @@ def clean_data(df):
         # convert column from string to numeric
         categories[column] = categories[column].apply(lambda x: int(x))
 
+    # Drop the 2 to remove the multi-class category
+    categories = categories.replace(2, np.nan)
+    categories.dropna(subset=['related'], inplace=True)
+
     # drop the original 'categories' column from `df` and concatenate the new columns
     df.drop('categories', axis=1, inplace=True)
     df = pd.concat([df, categories], axis=1)
@@ -69,7 +75,7 @@ def save_data(df, database_filename):
         - database_filename (str): The filename for the SQLite database.
     """
     engine = create_engine(f'sqlite:///{database_filename}')
-    df.to_sql('Messages_And_Categories_Table', engine, index=False)
+    df.to_sql('Messages_And_Categories_Table', engine, index=False, if_exists='replace')
 
 
 def main():
